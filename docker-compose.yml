@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: .
+    container_name: app-container
+    restart: on-failure
+    ports:
+      - "${APP_EXPOSED_PORT}:5000"
+    depends_on:
+      - db
+    networks:
+      - apps
+  db:
+    image: postgres:14-alpine
+    restart: on-failure
+    container_name: db-container
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "${DB_EXPOSED_PORT}:5432"
+    volumes:
+      - pg:/var/lib/postgresql4
+    networks:
+      - apps
+
+volumes:
+  pg:
+    driver: local
+
+networks:
+  apps:
+    driver: bridge
